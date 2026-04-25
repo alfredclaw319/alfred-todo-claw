@@ -1,20 +1,47 @@
-<.header>
-  Todo {@todo.id}
-  <:subtitle>This is a todo record from your database.</:subtitle>
-  <:actions>
-    <.link patch={~p"/todos/#{@todo}/show/edit"} phx-click={JS.push_focus()}>
-      <.button>Edit todo</.button>
+<section class="rounded-[2rem] border border-white/10 bg-white/[0.07] p-6 shadow-2xl shadow-slate-950/50 backdrop-blur-xl sm:p-8">
+  <p class="sr-only">Show Todo</p>
+  <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+    <div>
+      <.link
+        navigate={~p"/todos"}
+        class="mb-5 inline-flex text-sm font-semibold text-blue-200 hover:text-white"
+      >
+        ← Back to todos
+      </.link>
+      <p class="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-emerald-300/80">
+        Task detail
+      </p>
+      <h1 class={[
+        "text-4xl font-black tracking-tight sm:text-5xl",
+        if(@todo.completed, do: "text-slate-400 line-through", else: "text-white")
+      ]}>
+        {@todo.title}
+      </h1>
+    </div>
+    <.link
+      patch={~p"/todos/#{@todo}/show/edit"}
+      phx-click={JS.push_focus()}
+      class="inline-flex items-center justify-center rounded-2xl bg-emerald-400 px-5 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-emerald-950/40 transition hover:-translate-y-0.5 hover:bg-emerald-300"
+    >
+      Edit todo
     </.link>
-  </:actions>
-</.header>
+  </div>
 
-<.list>
-  <:item title="Title">{@todo.title}</:item>
-  <:item title="Notes">{@todo.notes}</:item>
-  <:item title="Completed">{@todo.completed}</:item>
-</.list>
-
-<.back navigate={~p"/todos"}>Back to todos</.back>
+  <div class="grid gap-4 sm:grid-cols-3">
+    <div class="rounded-2xl border border-white/10 bg-slate-950/40 p-5 sm:col-span-2">
+      <p class="text-xs font-bold uppercase tracking-[0.24em] text-slate-500">Notes</p>
+      <p class="mt-3 whitespace-pre-wrap text-slate-200">
+        {@todo.notes || "No notes. Mysterious."}
+      </p>
+    </div>
+    <div class="rounded-2xl border border-white/10 bg-slate-950/40 p-5">
+      <p class="text-xs font-bold uppercase tracking-[0.24em] text-slate-500">Status</p>
+      <p class="mt-3 text-lg font-bold text-white">
+        {if @todo.completed, do: "Done", else: "Open"}
+      </p>
+    </div>
+  </div>
+</section>
 
 <.modal :if={@live_action == :edit} id="todo-modal" show on_cancel={JS.patch(~p"/todos/#{@todo}")}>
   <.live_component

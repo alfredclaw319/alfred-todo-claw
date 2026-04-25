@@ -1,32 +1,23 @@
-<header class="px-4 sm:px-6 lg:px-8">
-  <div class="flex items-center justify-between border-b border-zinc-100 py-3 text-sm">
-    <div class="flex items-center gap-4">
-      <a href="/">
-        <img src={~p"/images/logo.svg"} width="36" />
-      </a>
-      <p class="bg-brand/5 text-brand rounded-full px-2 font-medium leading-6">
-        v{Application.spec(:phoenix, :vsn)}
-      </p>
+<div class="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.22),_transparent_34rem),radial-gradient(circle_at_top_right,_rgba(16,185,129,0.16),_transparent_28rem),#020617]">
+  <main class="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+    <div class="mb-10 flex items-center justify-between gap-4">
+      <.link navigate={~p"/"} class="group flex items-center gap-3">
+        <div class="grid h-11 w-11 place-items-center rounded-2xl border border-white/10 bg-white/10 text-xl shadow-2xl shadow-blue-950/40 backdrop-blur transition group-hover:bg-white/15">
+          🦞
+        </div>
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-[0.28em] text-blue-200/70">Alfred</p>
+          <p class="text-lg font-bold tracking-tight text-white">Todo</p>
+        </div>
+      </.link>
+      <div class="hidden rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-300 shadow-xl shadow-slate-950/30 sm:block">
+        Phoenix, minus the showroom stickers
+      </div>
     </div>
-    <div class="flex items-center gap-4 font-semibold leading-6 text-zinc-900">
-      <a href="https://twitter.com/elixirphoenix" class="hover:text-zinc-700">
-        @elixirphoenix
-      </a>
-      <a href="https://github.com/phoenixframework/phoenix" class="hover:text-zinc-700">
-        GitHub
-      </a>
-      <a
-        href="https://hexdocs.pm/phoenix/overview.html"
-        class="rounded-lg bg-zinc-100 px-2 py-1 hover:bg-zinc-200/80"
-      >
-        Get Started <span aria-hidden="true">&rarr;</span>
-      </a>
+
+    <div class="mx-auto max-w-4xl">
+      <.flash_group flash={@flash} />
+      {@inner_content}
     </div>
-  </div>
-</header>
-<main class="px-4 py-20 sm:px-6 lg:px-8">
-  <div class="mx-auto max-w-2xl">
-    <.flash_group flash={@flash} />
-    {@inner_content}
-  </div>
-</main>
+  </main>
+</div>

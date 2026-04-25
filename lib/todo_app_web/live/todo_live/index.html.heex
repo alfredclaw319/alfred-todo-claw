@@ -1,54 +1,88 @@
-<.header>
-  Todos
-  <:subtitle>A small Phoenix LiveView todo app with SQLite persistence.</:subtitle>
-  <:actions>
-    <.link patch={~p"/todos/new"}>
-      <.button>New task</.button>
-    </.link>
-  </:actions>
-</.header>
-
-<.table
-  id="todos"
-  rows={@streams.todos}
-  row_click={fn {_id, todo} -> JS.navigate(~p"/todos/#{todo}") end}
->
-  <:col :let={{_id, todo}} label="Task">
-    <span class={
-      if todo.completed, do: "line-through text-zinc-400", else: "font-medium text-zinc-900"
-    }>
-      {todo.title}
-    </span>
-    <p :if={todo.notes not in [nil, ""]} class="mt-1 text-sm text-zinc-500">{todo.notes}</p>
-  </:col>
-  <:col :let={{_id, todo}} label="Status">
-    <span class={[
-      "rounded-full px-2 py-1 text-xs font-semibold",
-      if(todo.completed, do: "bg-green-100 text-green-700", else: "bg-amber-100 text-amber-700")
-    ]}>
-      {if todo.completed, do: "Done", else: "Open"}
-    </span>
-  </:col>
-  <:action :let={{_id, todo}}>
-    <.link phx-click="toggle" phx-value-id={todo.id}>
-      {if todo.completed, do: "Reopen", else: "Complete"}
-    </.link>
-  </:action>
-  <:action :let={{_id, todo}}>
-    <div class="sr-only">
-      <.link navigate={~p"/todos/#{todo}"}>Show</.link>
+<section class="overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.07] shadow-2xl shadow-slate-950/50 backdrop-blur-xl">
+  <div class="border-b border-white/10 bg-white/[0.04] px-6 py-7 sm:px-8">
+    <div class="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <p class="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-emerald-300/80">
+          Command list
+        </p>
+        <h1 class="text-4xl font-black tracking-tight text-white sm:text-5xl">Todos</h1>
+        <p class="mt-3 max-w-2xl text-sm leading-6 text-slate-300 sm:text-base">
+          Capture the thing, finish the thing, then enjoy the tiny dopamine biscuit.
+        </p>
+      </div>
+      <.link
+        patch={~p"/todos/new"}
+        class="inline-flex items-center justify-center rounded-2xl bg-emerald-400 px-5 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-emerald-950/40 transition hover:-translate-y-0.5 hover:bg-emerald-300"
+      >
+        New task
+      </.link>
     </div>
-    <.link patch={~p"/todos/#{todo}/edit"}>Edit</.link>
-  </:action>
-  <:action :let={{id, todo}}>
-    <.link
-      phx-click={JS.push("delete", value: %{id: todo.id}) |> hide("##{id}")}
-      data-confirm="Are you sure?"
+  </div>
+
+  <div id="todos" phx-update="stream" class="divide-y divide-white/10">
+    <div
+      :for={{id, todo} <- @streams.todos}
+      id={id}
+      class="group grid gap-4 px-6 py-5 transition hover:bg-white/[0.05] sm:grid-cols-[1fr_auto] sm:items-center sm:px-8"
     >
-      Delete
-    </.link>
-  </:action>
-</.table>
+      <button
+        type="button"
+        phx-click={JS.navigate(~p"/todos/#{todo}")}
+        class="min-w-0 text-left"
+      >
+        <div class="flex items-start gap-4">
+          <span class={[
+            "mt-1 grid h-6 w-6 shrink-0 place-items-center rounded-full border text-xs font-black transition",
+            if(todo.completed,
+              do: "border-emerald-300 bg-emerald-300 text-slate-950",
+              else:
+                "border-white/20 bg-white/5 text-transparent group-hover:border-emerald-300/70"
+            )
+          ]}>
+            ✓
+          </span>
+          <div class="min-w-0">
+            <h2 class={[
+              "text-lg font-bold tracking-tight",
+              if(todo.completed, do: "text-slate-400 line-through", else: "text-white")
+            ]}>
+              {todo.title}
+            </h2>
+            <p
+              :if={todo.notes not in [nil, ""]}
+              class="mt-1 max-w-2xl text-sm leading-6 text-slate-400"
+            >
+              {todo.notes}
+            </p>
+          </div>
+        </div>
+      </button>
+
+      <div class="flex flex-wrap items-center gap-2 pl-10 sm:justify-end sm:pl-0" role="group">
+        <span class={[
+          "rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide",
+          if(todo.completed,
+            do: "bg-emerald-300/15 text-emerald-200",
+            else: "bg-amber-300/15 text-amber-200"
+          )
+        ]}>
+          {if todo.completed, do: "Done", else: "Open"}
+        </span>
+        <.link class="task-action" phx-click="toggle" phx-value-id={todo.id}>
+          {if todo.completed, do: "Reopen", else: "Complete"}
+        </.link>
+        <.link class="task-action" patch={~p"/todos/#{todo}/edit"}>Edit</.link>
+        <.link
+          class="task-action text-rose-200 hover:bg-rose-400/15 hover:text-rose-100"
+          phx-click={JS.push("delete", value: %{id: todo.id}) |> hide("##{id}")}
+          data-confirm="Are you sure?"
+        >
+          Delete
+        </.link>
+      </div>
+    </div>
+  </div>
+</section>
 
 <.modal :if={@live_action in [:new, :edit]} id="todo-modal" show on_cancel={JS.patch(~p"/todos")}>
   <.live_component
